@@ -1,2 +1,2 @@
 Drag and drop file
-![](kameExampleDragDropOBJ.gif)
+![](https://github.com/ibaykoc/kameExamples/blob/master/kameExampleDragDropOBJ/kameDragDropOBJDemo.gif)
