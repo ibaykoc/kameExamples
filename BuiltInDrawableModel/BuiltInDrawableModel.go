@@ -13,12 +13,14 @@ var triangleModel kame.DrawableModel
 
 func main() {
 	var err error
-
 	window, err = kame.TurnOn(update, draw)
 	if err != nil {
 		panic(err)
 	}
 	defer kame.TurnOff()
+
+	window.EnableCameraFPSControl()
+	window.LockCursor()
 
 	quadModel, err = kame.CreateDrawableModelT(kame.Quad, "../Texture/gopher.png")
 	if err != nil {
@@ -34,9 +36,9 @@ func main() {
 	}
 }
 
-func update(timeSinceLastFrame float64) {
+func update(timeSinceLastFrame float32) {
 	i := window.GetInput()
-	if i.GetKeyStat(kame.KeyLeftAlt) == kame.Press && i.GetKeyStat(kame.KeyF4) == kame.Press || i.GetKeyStat(kame.KeyEscape) == kame.Press {
+	if i.GetKeyStat(kame.KeyEscape) == kame.Press {
 		window.Close()
 	}
 }

@@ -39,7 +39,7 @@ func main() {
 	}
 }
 
-func update(timeSinceLastFrame float64) {
+func update(timeSinceLastFrame float32) {
 	i := window.GetInput()
 	if i.GetKeyStat(kame.KeyLeftAlt) == kame.Press && i.GetKeyStat(kame.KeyF4) == kame.Press || i.GetKeyStat(kame.KeyEscape) == kame.Press {
 		window.Close()
@@ -47,6 +47,6 @@ func update(timeSinceLastFrame float64) {
 }
 
 func draw(drawer *kame.Drawer) {
-	// Drawable model with no texture defined will be using default texture which is purple
+	// Drawable model with no defined texture will be using default texture which is purple
 	drawer.Draw(customModel)
 }

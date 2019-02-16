@@ -30,7 +30,7 @@ var window *kame.Window
 var models []kame.DrawableModel
 var t float32
 
-func update(timeSinceLastFrame float64) {
+func update(timeSinceLastFrame float32) {
 	t += 0.01 * float32(timeSinceLastFrame)
 	i := window.GetInput()
 	if i.GetKeyStat(kame.KeyLeftAlt) == kame.Press && i.GetKeyStat(kame.KeyF4) == kame.Press || i.GetKeyStat(kame.KeyEscape) == kame.Press {
@@ -40,7 +40,7 @@ func update(timeSinceLastFrame float64) {
 
 func draw(drawer *kame.Drawer) {
 	for i, model := range models {
-		drawer.DrawAt(model, mgl32.Translate3D(-3+float32(i*3), 0, 0).Mul4(mgl32.HomogRotate3D(t, mgl32.Vec3{0, 1, 0})))
+		drawer.DrawAt(model, mgl32.Translate3D(-3+float32(i*3), 0, 0).Mul4(mgl32.HomogRotate3D(t, mgl32.Vec3{1, 0, 0})))
 	}
 }
 
