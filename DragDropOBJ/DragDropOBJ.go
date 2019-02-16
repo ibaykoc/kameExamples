@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ibaykoc/kame"
@@ -44,6 +45,9 @@ func draw(drawer *kame.Drawer) {
 }
 
 func onDropFile(filePath string) {
+	if !strings.HasSuffix(filePath, ".obj") {
+		return
+	}
 	objModel, err := kame.LoadOBJ(filePath, "../Texture/gopher_smooth_ball.png")
 	if err != nil {
 		panic(err)
