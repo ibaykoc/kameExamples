@@ -17,12 +17,13 @@ func main() {
 	defer kame.TurnOff()
 
 	window.SetOnDropFileFunc(onDropFile)
-	defer window.Close()
 
 	for !window.WannaClose {
 		window.DoMagic()
 	}
 }
+
+//---------- The real deal is down here ----------
 
 var window *kame.Window
 var models []kame.DrawableModel
