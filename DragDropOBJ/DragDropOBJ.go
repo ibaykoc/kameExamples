@@ -7,9 +7,6 @@ import (
 	"github.com/ibaykoc/kame"
 )
 
-var window *kame.Window
-var models []kame.DrawableModel
-
 func main() {
 	var err error
 
@@ -20,11 +17,16 @@ func main() {
 	defer kame.TurnOff()
 
 	window.SetOnDropFileFunc(onDropFile)
+	defer window.Close()
 
 	for !window.WannaClose {
 		window.DoMagic()
 	}
 }
+
+var window *kame.Window
+var models []kame.DrawableModel
+var t float32
 
 func update(timeSinceLastFrame float64) {
 	i := window.GetInput()
@@ -32,8 +34,6 @@ func update(timeSinceLastFrame float64) {
 		window.Close()
 	}
 }
-
-var t float32
 
 func draw(drawer *kame.Drawer) {
 	t += 0.01
@@ -43,7 +43,6 @@ func draw(drawer *kame.Drawer) {
 }
 
 func onDropFile(filePath string) {
-	fmt.Println(filePath)
 	objModel, err := kame.LoadOBJ(filePath, "../Texture/gopher_smooth_ball.png")
 	if err != nil {
 		panic(err)
