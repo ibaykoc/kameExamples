@@ -37,7 +37,6 @@ var t float32
 
 func draw(drawer *kame.Drawer) {
 	t += 0.01
-	// drawer.DrawAtRotation(gopherBall, mgl32.Vec3{0, t, 0})
 	for i, model := range models {
 		drawer.DrawAt(model, mgl32.Translate3D(-3+float32(i*3), 0, 0).Mul4(mgl32.HomogRotate3D(t, mgl32.Vec3{0, 1, 0})))
 	}
