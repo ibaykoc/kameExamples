@@ -10,7 +10,7 @@ var customModel kame.DrawableModel
 func main() {
 	var err error
 
-	window, err = kame.TurnOn(update, draw)
+	window, err = kame.TurnOn2D(update, draw)
 	if err != nil {
 		panic(err)
 	}
@@ -46,7 +46,7 @@ func update(timeSinceLastFrame float32) {
 	}
 }
 
-func draw(drawer *kame.Drawer) {
+func draw(drawer *kame.KDrawer) {
 	// Drawable model with no defined texture will be using default texture which is purple
 	drawer.Draw(customModel)
 }

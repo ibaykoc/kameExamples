@@ -11,7 +11,7 @@ import (
 func main() {
 	var err error
 
-	window, err = kame.TurnOn(update, draw)
+	window, err = kame.TurnOn3D(update, draw)
 	if err != nil {
 		panic(err)
 	}
@@ -38,7 +38,7 @@ func update(timeSinceLastFrame float32) {
 	}
 }
 
-func draw(drawer *kame.Drawer) {
+func draw(drawer *kame.KDrawer) {
 	for i, model := range models {
 		drawer.DrawAt(model, mgl32.Translate3D(-3+float32(i*3), 0, 0).Mul4(mgl32.HomogRotate3D(t, mgl32.Vec3{1, 0, 0})))
 	}

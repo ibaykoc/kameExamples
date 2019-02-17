@@ -13,13 +13,13 @@ var triangleModel kame.DrawableModel
 
 func main() {
 	var err error
-	window, err = kame.TurnOn(update, draw)
+	window, err = kame.TurnOn2D(update, draw)
 	if err != nil {
 		panic(err)
 	}
 	defer kame.TurnOff()
 
-	window.EnableCameraFPSControl()
+	window.EnableCameraMovementControl()
 	window.LockCursor()
 
 	quadModel, err = kame.CreateDrawableModelT(kame.Quad, "../Texture/gopher.png")
@@ -45,7 +45,7 @@ func update(timeSinceLastFrame float32) {
 
 var t float32
 
-func draw(drawer *kame.Drawer) {
+func draw(drawer *kame.KDrawer) {
 	t += 0.01
 	drawer.DrawAtRotation(quadModel, mgl32.Vec3{0, 0, t})
 	drawer.DrawAtPosition(triangleModel, mgl32.Vec3{3, float32(math.Sin(float64(t))), 0})
