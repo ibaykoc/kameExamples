@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/go-gl/mathgl/mgl32"
 
 	"github.com/ibaykoc/kame"
@@ -44,11 +46,10 @@ func (ms *MovingSystem) OnEntityMatch(entity *kame.Entity, components []*kame.Co
 }
 
 func (ms *MovingSystem) Process(timeSinceLastFrame float32) {
+	fmt.Printf("%9.2f FPS\n", 60/timeSinceLastFrame)
 	for _, e := range ms.matchEntityIDToComponentSet {
 		vX, vY := e.velocity.Elem()
 		e.position = e.position.Add(mgl32.Vec3{vX * timeSinceLastFrame, vY * timeSinceLastFrame, 0})
-		// mx := gameWindow.GetInput().MouseX
-		// my := gameWindow.GetInput().MouseY
 		ww, wh := gameWindow.GetSize()
 		ww = ww / 50
 		wh = wh / 50
@@ -70,9 +71,5 @@ func (ms *MovingSystem) Process(timeSinceLastFrame float32) {
 			e.velocity = mgl32.Vec2{vX, -vY}
 			e.position = mgl32.Vec3{e.position.X(), wb, 0}
 		}
-		// mx -= float32(ww) / 2
-		// my -= float32(wh) / 2
-		// e.position = mgl32.Vec3{mx / 50, -my / 50, 0}
-		// fmt.Printf("Pos: %v\n", e.position)
 	}
 }

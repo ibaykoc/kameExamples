@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/ibaykoc/kame"
 )
 
@@ -14,9 +12,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	w, h := gameWindow.GetSize()
-	fmt.Printf("W: %d, H: %d\n", w, h)
 
+	gameWindow.Start()
 	for !gameWindow.WannaClose {
 		gameWindow.DoMagic()
 	}

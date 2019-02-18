@@ -11,9 +11,11 @@ type MainScene struct {
 }
 
 func (ms *MainScene) CreateEntities() {
-	ms.entities = []kame.Entity{
-		&Ball{},
+	entities := make([]kame.Entity, 100)
+	for i := 0; i < len(entities); i++ {
+		entities[i] = &Ball{}
 	}
+	ms.entities = entities
 }
 func (ms *MainScene) GetEntities() *[]kame.Entity {
 	return &ms.entities
