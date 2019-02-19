@@ -13,12 +13,12 @@ type DrawingSystem struct {
 	matchEntityIDToComponentSet map[int]DrawingComponentSet
 }
 
-func (ms *DrawingSystem) OnCreate() {
-	ms.matchEntityIDToComponentSet = make(map[int]DrawingComponentSet)
+func (ds *DrawingSystem) OnCreate() {
+	ds.matchEntityIDToComponentSet = make(map[int]DrawingComponentSet)
 }
 
-func (ms *DrawingSystem) CreateEntityFilters() {
-	ms.filterSets = []kame.EntityFilterSet{
+func (ds *DrawingSystem) CreateEntityFilters() {
+	ds.filterSets = []kame.EntityFilterSet{
 		kame.EntityFilterSet{
 			ComponentType: &PositionComponent{},
 			Need:          true,
@@ -30,21 +30,32 @@ func (ms *DrawingSystem) CreateEntityFilters() {
 	}
 }
 
-func (ms *DrawingSystem) GetEntityFilters() []kame.EntityFilterSet {
-	return ms.filterSets
+func (ds *DrawingSystem) GetEntityFilters() []kame.EntityFilterSet {
+	return ds.filterSets
 }
 
-func (ms *DrawingSystem) OnEntityMatch(entity *kame.Entity, components []*kame.Component) {
-	ms.matchEntityIDToComponentSet[(*entity).GetID()] = DrawingComponentSet{
+func (ds *DrawingSystem) OnEntityMatch(entity *kame.Entity, components []*kame.Component) {
+	ds.matchEntityIDToComponentSet[(*entity).GetID()] = DrawingComponentSet{
 		PositionComponent: (*components[0]).(*PositionComponent),
 		DrawableComponent: (*components[1]).(*DrawableComponent),
 	}
 }
 
-func (ms *DrawingSystem) Draw(kdrawer *kame.KDrawer) {
-	for _, e := range ms.matchEntityIDToComponentSet {
-		pos := e.position
-		dm := e.drawable
-		kdrawer.DrawAtPosition(dm, pos)
+func (ds *DrawingSystem) OnRemoveEntities(entityIDs []int) {
+	for _, de := range entityIDs {
+		for e := range ds.matchEntityIDToComponentSet {
+			if e == de {
+				delete(ds.matchEntityIDToComponentSet, e)
+				break
+			}
+		}
+	}
+}
+
+func (ds *DrawingSystem) Draw(kdrawer *kame.KDrawer) {
+	for _, cSet := range ds.matchEntityIDToComponentSet {
+		pos := cSet.position
+		dmID := cSet.drawableModelID
+		kdrawer.DrawAtPosition(dmID, pos)
 	}
 }

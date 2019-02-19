@@ -8,8 +8,8 @@ import (
 )
 
 var window *kame.Window
-var quadModel kame.DrawableModel
-var triangleModel kame.DrawableModel
+var quadModel kame.DrawableModelID
+var triangleModel kame.DrawableModelID
 
 func main() {
 	var err error
@@ -22,11 +22,11 @@ func main() {
 	window.EnableCameraMovementControl()
 	window.LockCursor()
 
-	quadModel, err = kame.CreateDrawableModelT(kame.Quad, "../Texture/gopher.png")
+	quadModel, err = kame.CreateBuiltInDrawableModelT(kame.Quad, "../Texture/gopher.png")
 	if err != nil {
 		panic(err)
 	}
-	triangleModel, err = kame.CreateDrawableModelT(kame.Triangle, "../Texture/gopher.png")
+	triangleModel, err = kame.CreateBuiltInDrawableModelT(kame.Triangle, "../Texture/gopher.png")
 	if err != nil {
 		panic(err)
 	}

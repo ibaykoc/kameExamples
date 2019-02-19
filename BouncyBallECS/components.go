@@ -12,5 +12,5 @@ type VelocityComponent struct {
 	velocity mgl32.Vec2
 }
 type DrawableComponent struct {
-	drawable kame.DrawableModel
+	drawableModelID kame.DrawableModelID
 }

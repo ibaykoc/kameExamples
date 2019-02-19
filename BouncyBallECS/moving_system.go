@@ -45,31 +45,41 @@ func (ms *MovingSystem) OnEntityMatch(entity *kame.Entity, components []*kame.Co
 	}
 }
 
+func (ms *MovingSystem) OnRemoveEntities(entitieIDs []int) {
+	for _, de := range entitieIDs {
+		for eID := range ms.matchEntityIDToComponentSet {
+			if eID == de {
+				delete(ms.matchEntityIDToComponentSet, eID)
+				break
+			}
+		}
+	}
+}
+
 func (ms *MovingSystem) Process(timeSinceLastFrame float32) {
 	fmt.Printf("%9.2f FPS\n", 60/timeSinceLastFrame)
-	for _, e := range ms.matchEntityIDToComponentSet {
-		vX, vY := e.velocity.Elem()
-		e.position = e.position.Add(mgl32.Vec3{vX * timeSinceLastFrame, vY * timeSinceLastFrame, 0})
-		ww, wh := gameWindow.GetSize()
-		ww = ww / 50
-		wh = wh / 50
-		wr := float32(ww) / 2
-		wl := -float32(ww) / 2
-		wt := float32(wh) / 2
-		wb := -float32(wh) / 2
-		if e.position.X() > wr {
-			e.velocity = mgl32.Vec2{-vX, vY}
-			e.position = mgl32.Vec3{wr, e.position.Y(), 0}
-		} else if e.position.X() < wl {
-			e.velocity = mgl32.Vec2{-vX, vY}
-			e.position = mgl32.Vec3{wl, e.position.Y(), 0}
+	for _, cSet := range ms.matchEntityIDToComponentSet {
+		vX, vY := cSet.velocity.Elem()
+		cSet.position = cSet.position.Add(mgl32.Vec3{vX * timeSinceLastFrame, vY * timeSinceLastFrame, 0})
+		f := gameWindow.GetCameraFrustum()
+		wl := f.NearPlane.Min.X()
+		wr := f.NearPlane.Max.X()
+		wt := f.NearPlane.Max.Y()
+		wb := f.NearPlane.Min.Y()
+		x, y, z := cSet.position.Elem()
+		if x > wr {
+			cSet.position = mgl32.Vec3{wr, y, z}
+			cSet.velocity = mgl32.Vec2{-vX, vY}
+		} else if x < wl {
+			cSet.position = mgl32.Vec3{wl, y, z}
+			cSet.velocity = mgl32.Vec2{-vX, vY}
 		}
-		if e.position.Y() > wt {
-			e.velocity = mgl32.Vec2{vX, -vY}
-			e.position = mgl32.Vec3{e.position.X(), wt, 0}
-		} else if e.position.Y() < wb {
-			e.velocity = mgl32.Vec2{vX, -vY}
-			e.position = mgl32.Vec3{e.position.X(), wb, 0}
+		if y > wt {
+			cSet.velocity = mgl32.Vec2{vX, -vY}
+			cSet.position = mgl32.Vec3{x, wt, z}
+		} else if y < wb {
+			cSet.velocity = mgl32.Vec2{vX, -vY}
+			cSet.position = mgl32.Vec3{x, wb, z}
 		}
 	}
 }

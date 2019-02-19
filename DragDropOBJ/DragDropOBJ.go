@@ -27,7 +27,7 @@ func main() {
 //---------- The real deal is down here ----------
 
 var window *kame.Window
-var models []kame.DrawableModel
+var models []kame.DrawableModelID
 var t float32
 
 func update(timeSinceLastFrame float32) {
@@ -48,10 +48,10 @@ func onDropFile(filePath string) {
 	if !strings.HasSuffix(filePath, ".obj") {
 		return
 	}
-	objModel, err := kame.LoadOBJ(filePath, "../Texture/gopher_smooth_ball.png")
+	objModelID, err := kame.LoadOBJ(filePath, "../Texture/gopher_smooth_ball.png")
 	if err != nil {
 		panic(err)
 	}
-	models = append(models, objModel)
+	models = append(models, objModelID)
 	fmt.Printf("Total loaded model: %d\n", len(models))
 }

@@ -9,7 +9,7 @@ import (
 )
 
 type Ball struct {
-	components []kame.Component
+	components []*kame.Component
 	id         int
 }
 
@@ -22,25 +22,25 @@ func (b Ball) GetID() int {
 }
 
 func (b *Ball) CreateComponents() {
-	dm, err := kame.CreateDrawableModelT(kame.Quad, "../Texture/gopher_circle.png")
-	if err != nil {
-		panic(err)
-	}
 	rand.Seed(time.Now().UnixNano())
 	w, h := gameWindow.GetSize()
 	w /= 50
 	h /= 50
 	x := (-float32(w) / 2) + (rand.Float32() * float32(w) * 2)
 	y := (-float32(h) / 2) + (rand.Float32() * float32(h) * 2)
-	// fmt.Printf("%2.2f, %2.2f", x, y)
-	b.components = []kame.Component{
-		&PositionComponent{mgl32.Vec3{x, y, 0}},
-		&VelocityComponent{mgl32.Vec2{rand.Float32(), rand.Float32()}},
-		&DrawableComponent{dm},
+	xVel := ((rand.Float32() * 2) - 1) / 20
+	yVel := ((rand.Float32() * 2) - 1) / 20
+	var position kame.Component = &PositionComponent{mgl32.Vec3{x, y, float32(b.id) * 0.0001}}
+	var velocity kame.Component = &VelocityComponent{mgl32.Vec2{xVel, yVel}}
+	var drawable kame.Component = &DrawableComponent{quadModelID}
+	b.components = []*kame.Component{
+		&position,
+		&velocity,
+		&drawable,
 	}
 
 }
 
-func (b *Ball) GetComponents() *[]kame.Component {
-	return &b.components
+func (b *Ball) GetComponentPointers() []*kame.Component {
+	return b.components
 }
