@@ -7,10 +7,11 @@ import (
 	"github.com/ibaykoc/kame"
 )
 
-var kwindowID kame.KwindowID
+var windowCon kame.KwindowController
 var kwindowDrawer2DCon kame.KwindowDrawer2DController
-var kwindowDrawer3DID kame.KwindowDrawer3DController
 var gopherDrawable kame.Kdrawable2d
+var gopherCircleDrawable kame.Kdrawable2d
+var blockDrawable kame.Kdrawable2d
 var gopherPos []mgl32.Mat4
 
 func main() {
@@ -22,7 +23,7 @@ func main() {
 	defer kame.TurnOff()
 
 	// Create window
-	kwindowID, err = kame.KwindowBuilder().
+	windowCon, err = kame.KwindowBuilder().
 		SetTitle("Kame").
 		SetProcessInputFunc(processInput).
 		SetUpdateFunc(update).
@@ -37,15 +38,23 @@ func main() {
 	// w,a,s,d move up, left, down, right
 	// mouse scrool zoom in/out
 	// mouse click & drag drag the screen
-	kwindowID.EnableCameraMovementControl(true)
+	windowCon.EnableCameraMovementControl(true)
 
 	// Create Window Drawer 2D
 	kwindowDrawer2DCon, err = kame.KwindowDrawer2DBuilder().
 		SetBackgroundColor(kame.Kcolor{R: 1, G: 1, B: 1, A: 1}).
-		BuildTo(kwindowID)
+		BuildTo(windowCon.ID())
 
 	// Store Texture to drawer
-	goperCircleID, err := kwindowDrawer2DCon.StoreTexturePNG("../Texture/gopher_circle.png")
+	gopherCircleTextureID, err := kwindowDrawer2DCon.StoreTexturePNG("../Texture/gopher_circle.png")
+	if err != nil {
+		panic(err)
+	}
+	gopherTextureID, err := kwindowDrawer2DCon.StoreTexturePNG("../Texture/gopher.png")
+	if err != nil {
+		panic(err)
+	}
+	blockTextureID, err := kwindowDrawer2DCon.StoreTexturePNG("../Texture/block.png")
 	if err != nil {
 		panic(err)
 	}
@@ -80,18 +89,24 @@ func main() {
 	}
 
 	// Create drawable to draw
+	gopherCircleDrawable = kame.Kdrawable2d{
+		ShaderID:    kwindowDrawer2DCon.GetDefaultShaderID(),
+		MeshID:      quad,
+		TextureID:   gopherCircleTextureID,
+		TintColorID: whiteCol,
+	}
 	gopherDrawable = kame.Kdrawable2d{
 		ShaderID:    kwindowDrawer2DCon.GetDefaultShaderID(),
 		MeshID:      quad,
-		TextureID:   goperCircleID,
+		TextureID:   gopherTextureID,
 		TintColorID: whiteCol,
 	}
-
-	// Create Window Drawer 3D
-	kwindowDrawer3DID, err = kame.KwindowDrawer3DBuilder().
-		SetBackgroundColor(kame.Kcolor{R: 1, G: 1, B: 1, A: 1}).
-		BuildTo(kwindowID)
-
+	blockDrawable = kame.Kdrawable2d{
+		ShaderID:    kwindowDrawer2DCon.GetDefaultShaderID(),
+		MeshID:      quad,
+		TextureID:   blockTextureID,
+		TintColorID: whiteCol,
+	}
 	// Create position for drawable to draw to
 	gopherPos = []mgl32.Mat4{}
 	for x := float32(-20); x < 20; x += 0.175 {
@@ -112,7 +127,7 @@ func main() {
 func processInput(windowInput kame.KwindowInput) {
 	// Close when user just release escape key
 	if windowInput.GetKeyStat(kame.KeyEscape) == kame.JustRelease {
-		kwindowID.Close()
+		windowCon.Close()
 	}
 }
 
@@ -123,7 +138,13 @@ func update(timeSinceLastFrame float32) {
 
 func draw(drawer *kame.KwindowDrawer) {
 	// Append all drawable to the drawer to draw
-	for _, pos := range gopherPos {
-		(*drawer).AppendDrawable(gopherDrawable, pos)
+	for i, pos := range gopherPos {
+		if i%3 == 0 {
+			(*drawer).AppendDrawable(gopherDrawable, pos)
+		} else if i%3 == 1 {
+			(*drawer).AppendDrawable(gopherCircleDrawable, pos)
+		} else {
+			(*drawer).AppendDrawable(blockDrawable, pos)
+		}
 	}
 }

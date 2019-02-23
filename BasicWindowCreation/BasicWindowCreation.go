@@ -8,10 +8,11 @@ import (
 
 func main() {
 	var err error
-	err = kame.Initialize()
+	err = kame.TurnOn()
 	if err != nil {
 		panic(err)
 	}
+	defer kame.TurnOff()
 
 	CreateMultipleWindows()
 
@@ -29,7 +30,7 @@ func CreateMultipleWindows() {
 	wH := monH / wRow
 	for r := 0; r < wRow; r++ {
 		for c := 0; c < wCol; c++ {
-			err := kame.KwindowBuilder().
+			_, err := kame.KwindowBuilder().
 				SetTitle("Kwindow"+strconv.Itoa(r*wCol+c)).
 				SetTargetFPS(60).
 				SetPosition(c*wW, r*wH).
