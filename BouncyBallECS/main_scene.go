@@ -4,7 +4,7 @@ import (
 	"github.com/ibaykoc/kame"
 )
 
-var quadModelID kame.DrawableModelID
+var gopherCircleDrawable kame.Kdrawable2d
 
 type MainScene struct {
 	entities         []*kame.Entity
@@ -14,17 +14,55 @@ type MainScene struct {
 
 func (ms *MainScene) CreateEntities() {
 	var err error
-	quadModelID, err = kame.CreateBuiltInDrawableModelT(kame.Quad, "../Texture/gopher_circle.png")
+	// Store Texture to drawer
+	gopherCircleTextureID, err := kwindowDrawer2DCon.StoreTextureJPG("../Texture/honest.jpg")
 	if err != nil {
 		panic(err)
 	}
 
-	entities := make([]*kame.Entity, 1000)
+	// Store color to drawer
+	whiteCol := kwindowDrawer2DCon.StoreTintColor(kame.Kcolor{R: 1, G: 1, B: 1, A: 1})
+
+	// Store mesh to drawer
+	quad, err := kwindowDrawer2DCon.StoreMesh(
+		// Vertex Position
+		[]float32{
+			-0.5, +0.5, 0.0, //Left top
+			+0.5, +0.5, 0.0, //Right top
+			-0.5, -0.5, 0.0, //Left bottom
+			+0.5, -0.5, 0.0, //Right bottom
+		},
+		// Vertex UV
+		[]float32{
+			0.0, 1.0, //Left top
+			1.0, 1.0, //Right top
+			0.0, 0.0, //Left bottom
+			1.0, 0.0, //Right bottom
+		},
+		// Element
+		[]uint32{
+			0, 2, 1, // First triangle
+			1, 2, 3, // Second triangle
+		},
+	)
+	if err != nil {
+		panic(err)
+	}
+
+	gopherCircleDrawable = kame.Kdrawable2d{
+		ShaderID:    kwindowDrawer2DCon.DefaultShaderID(),
+		MeshID:      quad,
+		TextureID:   gopherCircleTextureID,
+		TintColorID: whiteCol,
+	}
+
+	entities := make([]*kame.Entity, 10000)
 	for i := 0; i < len(entities); i++ {
 		var b kame.Entity
 		b = &Ball{}
 		entities[i] = &b
 	}
+
 	ms.entities = entities
 }
 func (ms *MainScene) GetEntityPointers() []*kame.Entity {

@@ -61,11 +61,11 @@ func (ms *MovingSystem) Process(timeSinceLastFrame float32) {
 	for _, cSet := range ms.matchEntityIDToComponentSet {
 		vX, vY := cSet.velocity.Elem()
 		cSet.position = cSet.position.Add(mgl32.Vec3{vX * timeSinceLastFrame, vY * timeSinceLastFrame, 0})
-		f := gameWindow.GetCameraFrustum()
-		wl := f.NearPlane.Min.X()
-		wr := f.NearPlane.Max.X()
-		wt := f.NearPlane.Max.Y()
-		wb := f.NearPlane.Min.Y()
+		f := kwindowDrawer2DCon.Camera().Frustum()
+		wl := f.NearPlane.BottomLeft.X()
+		wr := f.NearPlane.BottomRight.X()
+		wt := f.NearPlane.TopLeft.Y()
+		wb := f.NearPlane.BottomLeft.Y()
 		x, y, z := cSet.position.Elem()
 		if x > wr {
 			cSet.position = mgl32.Vec3{wr, y, z}

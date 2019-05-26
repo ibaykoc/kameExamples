@@ -46,10 +46,10 @@ func (ds *DrawingSystem) OnEntityMatch(entity *kame.Entity, components []*kame.C
 
 }
 
-func (ds *DrawingSystem) Draw(drawer *kame.KDrawer) {
+func (ds *DrawingSystem) Draw(kdrawer *kame.KwindowDrawer) {
 	// fmt.Println("Draw")
 	for _, cset := range ds.entityIDtoComponentSet {
-		drawer.DrawAt(cset.drawableID,
+		(*kdrawer).AppendDrawable(cset.drawable,
 			mgl32.Translate3D(cset.position.Elem()).
 				Mul4(mgl32.Scale3D(cset.TransformComponent.scale.Elem())))
 	}

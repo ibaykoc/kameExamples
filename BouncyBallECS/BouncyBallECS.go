@@ -4,23 +4,42 @@ import (
 	"github.com/ibaykoc/kame"
 )
 
-var gameWindow *kame.GameWindow
+var gameWindow *kame.KGameWindow
+var kwindowDrawer2DCon kame.KwindowDrawer2DController
 
 func main() {
 	var err error
-	gameWindow, err = kame.GameOn2D(
-		[]kame.Scene{
+	err = kame.TurnOn()
+	if err != nil {
+		panic(err)
+	}
+	defer kame.TurnOff()
+
+	gameWindow, err = kame.KgameWindowBuilder().
+		SetTitle("BouncyBallECS").
+		SetSize(600, 600).
+		IsResizable().
+		BuildWith([]kame.Scene{
 			&MainScene{},
-		})
+		},
+		)
+
 	if err != nil {
 		panic(err)
 	}
 
-	gameWindow.LockCursor()
-	gameWindow.EnableCameraMovementControl()
+	kwindowDrawer2DCon, err = kame.KwindowDrawer2DBuilder().
+		SetBackgroundColor(kame.Kcolor{R: 1, G: 1, B: 1, A: 1}).
+		BuildTo(gameWindow.ID())
+	if err != nil {
+		panic(err)
+	}
+
+	gameWindow.LockCursor(false)
+	gameWindow.EnableCameraMovementControl(true)
 
 	gameWindow.Start()
-	for !gameWindow.WannaClose {
-		gameWindow.DoMagic()
+	for !kame.ShouldClose() {
+		kame.DoMagic()
 	}
 }

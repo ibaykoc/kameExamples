@@ -39,7 +39,7 @@ func main() {
 	// Mouse movement to look
 	// Shift to run
 	windowCon.EnableCameraMovementControl(true)
-	windowCon.LockCursor()
+	windowCon.LockCursor(true)
 
 	// Create Window Drawer 2D
 	kwindowDrawer3DCon, err = kame.KwindowDrawer3DBuilder().
@@ -94,17 +94,17 @@ func main() {
 
 	// Create drawable to draw
 	gopherCircleDrawable = kame.Kdrawable3d{
-		ShaderID:  kwindowDrawer3DCon.GetDefaultShaderID(),
+		ShaderID:  kwindowDrawer3DCon.DefaultShaderID(),
 		MeshID:    quad,
 		TextureID: gopherCircleTextureID,
 	}
 	gopherDrawable = kame.Kdrawable3d{
-		ShaderID:  kwindowDrawer3DCon.GetDefaultShaderID(),
+		ShaderID:  kwindowDrawer3DCon.DefaultShaderID(),
 		MeshID:    quad,
 		TextureID: gopherTextureID,
 	}
 	blockDrawable = kame.Kdrawable3d{
-		ShaderID:  kwindowDrawer3DCon.GetDefaultShaderID(),
+		ShaderID:  kwindowDrawer3DCon.DefaultShaderID(),
 		MeshID:    quad,
 		TextureID: blockTextureID,
 	}

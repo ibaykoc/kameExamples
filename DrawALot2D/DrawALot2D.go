@@ -24,7 +24,7 @@ func main() {
 
 	// Create window
 	windowCon, err = kame.KwindowBuilder().
-		SetTitle("Kame").
+		SetTitle("DrawALot2D").
 		SetProcessInputFunc(processInput).
 		SetUpdateFunc(update).
 		SetDrawFunc(draw).
@@ -32,6 +32,9 @@ func main() {
 		SetSize(600, 600).
 		IsResizable().
 		Build()
+	if err != nil {
+		panic(err)
+	}
 
 	// Enable CameraMovement Control
 	// For 2d drawer
@@ -90,27 +93,27 @@ func main() {
 
 	// Create drawable to draw
 	gopherCircleDrawable = kame.Kdrawable2d{
-		ShaderID:    kwindowDrawer2DCon.GetDefaultShaderID(),
+		ShaderID:    kwindowDrawer2DCon.DefaultShaderID(),
 		MeshID:      quad,
 		TextureID:   gopherCircleTextureID,
 		TintColorID: whiteCol,
 	}
 	gopherDrawable = kame.Kdrawable2d{
-		ShaderID:    kwindowDrawer2DCon.GetDefaultShaderID(),
+		ShaderID:    kwindowDrawer2DCon.DefaultShaderID(),
 		MeshID:      quad,
 		TextureID:   gopherTextureID,
 		TintColorID: whiteCol,
 	}
 	blockDrawable = kame.Kdrawable2d{
-		ShaderID:    kwindowDrawer2DCon.GetDefaultShaderID(),
+		ShaderID:    kwindowDrawer2DCon.DefaultShaderID(),
 		MeshID:      quad,
 		TextureID:   blockTextureID,
 		TintColorID: whiteCol,
 	}
 	// Create position for drawable to draw to
 	gopherPos = []mgl32.Mat4{}
-	for x := float32(-20); x < 20; x += 0.175 {
-		for y := float32(-20); y < 20; y += 0.175 {
+	for x := float32(-20); x < 20; x += 0.2 {
+		for y := float32(-20); y < 20; y += 0.2 {
 			gopherPos = append(gopherPos,
 				mgl32.Translate3D(x, y, 0).
 					Mul4(mgl32.Scale3D(0.05, 0.05, 1)),

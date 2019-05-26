@@ -15,12 +15,12 @@ type MainScene struct {
 	drawerSystems []*kame.DrawerSystem
 }
 
-var brickBlockDrawable kame.DrawableModelID
-var blueBlockDrawable kame.DrawableModelID
-var greenBlockDrawable kame.DrawableModelID
-var yellowBlockDrawable kame.DrawableModelID
-var ballDrawable kame.DrawableModelID
-var paddleDrawable kame.DrawableModelID
+var brickBlockDrawable kame.Kdrawable2d
+var blueBlockDrawable kame.Kdrawable2d
+var greenBlockDrawable kame.Kdrawable2d
+var yellowBlockDrawable kame.Kdrawable2d
+var ballDrawable kame.Kdrawable2d
+var paddleDrawable kame.Kdrawable2d
 
 func ReadLevel() [][]int {
 	lvlFile, err := os.Open("level.txt")
@@ -45,30 +45,91 @@ func ReadLevel() [][]int {
 
 func CreateDrawableModel() {
 	var err error
-
-	brickBlockDrawable, err = kame.CreateSprite()
-	brickBlockDrawable.LoadTexture("../Texture/block_solid.png")
-	brickBlockDrawable.SetTintColor(mgl32.Vec3{1, 1, 1})
-
-	blueBlockDrawable, err = kame.CreateSprite()
-	blueBlockDrawable.LoadTexture("../Texture/block.png")
-	blueBlockDrawable.SetTintColor(mgl32.Vec3{0.2, 0.6, 1.0})
-
-	greenBlockDrawable, err = kame.CreateSprite()
-	greenBlockDrawable.LoadTexture("../Texture/block.png")
-	greenBlockDrawable.SetTintColor(mgl32.Vec3{0.0, 0.7, 0.0})
-
-	yellowBlockDrawable, err = kame.CreateSprite()
-	yellowBlockDrawable.LoadTexture("../Texture/block.png")
-	yellowBlockDrawable.SetTintColor(mgl32.Vec3{0.8, 0.8, 0.4})
-
-	paddleDrawable, err = kame.CreateSprite()
-	paddleDrawable.LoadTexture("../Texture/paddle.png")
-
-	ballDrawable, err = kame.CreateSprite()
-	ballDrawable.LoadTexture("../Texture/gopher_circle.png")
+	// Store mesh to drawer
+	quad, err := kwindowDrawer2DCon.StoreMesh(
+		// Vertex Position
+		[]float32{
+			-0.5, +0.5, 0.0, //Left top
+			+0.5, +0.5, 0.0, //Right top
+			-0.5, -0.5, 0.0, //Left bottom
+			+0.5, -0.5, 0.0, //Right bottom
+		},
+		// Vertex UV
+		[]float32{
+			0.0, 1.0, //Left top
+			1.0, 1.0, //Right top
+			0.0, 0.0, //Left bottom
+			1.0, 0.0, //Right bottom
+		},
+		// Element
+		[]uint32{
+			0, 2, 1, // First triangle
+			1, 2, 3, // Second triangle
+		},
+	)
 	if err != nil {
 		panic(err)
+	}
+	// Store color to drawer
+	whiteCol := kwindowDrawer2DCon.StoreTintColor(kame.Kcolor{R: 1, G: 1, B: 1, A: 1})
+	blueCol := kwindowDrawer2DCon.StoreTintColor(kame.Kcolor{R: 0, G: 0, B: 1, A: 1})
+	greenCol := kwindowDrawer2DCon.StoreTintColor(kame.Kcolor{R: 0, G: 1, B: 0, A: 1})
+	yellowCol := kwindowDrawer2DCon.StoreTintColor(kame.Kcolor{R: 1, G: 1, B: 0, A: 1})
+
+	brickBlockTextureID, err := kwindowDrawer2DCon.StoreTexturePNG("../Texture/block_solid.png")
+	if err != nil {
+		panic(err)
+	}
+	brickBlockDrawable = kame.Kdrawable2d{
+		ShaderID:    kwindowDrawer2DCon.DefaultShaderID(),
+		MeshID:      quad,
+		TextureID:   brickBlockTextureID,
+		TintColorID: whiteCol,
+	}
+
+	blockTextureID, err := kwindowDrawer2DCon.StoreTexturePNG("../Texture/block.png")
+	if err != nil {
+		panic(err)
+	}
+
+	blueBlockDrawable = kame.Kdrawable2d{
+		ShaderID:    kwindowDrawer2DCon.DefaultShaderID(),
+		MeshID:      quad,
+		TextureID:   blockTextureID,
+		TintColorID: blueCol,
+	}
+	greenBlockDrawable = kame.Kdrawable2d{
+		ShaderID:    kwindowDrawer2DCon.DefaultShaderID(),
+		MeshID:      quad,
+		TextureID:   blockTextureID,
+		TintColorID: greenCol,
+	}
+	yellowBlockDrawable = kame.Kdrawable2d{
+		ShaderID:    kwindowDrawer2DCon.DefaultShaderID(),
+		MeshID:      quad,
+		TextureID:   blockTextureID,
+		TintColorID: yellowCol,
+	}
+
+	paddleTextureID, err := kwindowDrawer2DCon.StoreTexturePNG("../Texture/paddle.png")
+	if err != nil {
+		panic(err)
+	}
+	paddleDrawable = kame.Kdrawable2d{
+		ShaderID:    kwindowDrawer2DCon.DefaultShaderID(),
+		MeshID:      quad,
+		TextureID:   paddleTextureID,
+		TintColorID: whiteCol,
+	}
+	ballTextureID, err := kwindowDrawer2DCon.StoreTexturePNG("../Texture/gopher_circle.png")
+	if err != nil {
+		panic(err)
+	}
+	ballDrawable = kame.Kdrawable2d{
+		ShaderID:    kwindowDrawer2DCon.DefaultShaderID(),
+		MeshID:      quad,
+		TextureID:   ballTextureID,
+		TintColorID: whiteCol,
 	}
 }
 
@@ -78,7 +139,7 @@ func (ms *MainScene) CreateEntities() {
 	col := len(level[0])
 	row := len(level)
 
-	f := gameWindow.GetCameraFrustum()
+	f := kwindowDrawer2DCon.Camera().Frustum()
 
 	var entities = []*kame.Entity{}
 	w, _ := f.NearPlane.GetSize()
@@ -89,8 +150,8 @@ func (ms *MainScene) CreateEntities() {
 		for c := 0; c < col; c++ {
 			var trans kame.Component = &TransformComponent{
 				position: mgl32.Vec3{
-					(f.NearPlane.Min.X() + blockWidth/2) + (float32(c) * blockWidth),
-					(f.NearPlane.Max.Y() - blockHeight/2) - (float32(r) * blockHeight),
+					(f.NearPlane.BottomLeft.X() + blockWidth/2) + (float32(c) * blockWidth),
+					(f.NearPlane.TopLeft.Y() - blockHeight/2) - (float32(r) * blockHeight),
 					-10},
 				scale: mgl32.Vec3{blockWidth, blockHeight, 1},
 			}
@@ -125,7 +186,7 @@ func (ms *MainScene) CreateEntities() {
 	entities = append(entities, &ball)
 
 	var trans kame.Component = &TransformComponent{
-		position: mgl32.Vec3{0, f.NearPlane.Min.Y() + 0.5, 0},
+		position: mgl32.Vec3{0, f.NearPlane.BottomLeft.Y() + 0.5, 0},
 		scale:    mgl32.Vec3{2.5, 0.5, 1},
 	}
 	var draw kame.Component = &DrawableComponent{paddleDrawable}

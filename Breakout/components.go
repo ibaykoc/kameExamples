@@ -11,7 +11,7 @@ type TransformComponent struct {
 }
 
 type DrawableComponent struct {
-	drawableID kame.DrawableModelID
+	drawable kame.Kdrawable2d
 }
 
 type BlockComponent struct {

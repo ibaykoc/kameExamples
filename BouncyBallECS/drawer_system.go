@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/go-gl/mathgl/mgl32"
 	"github.com/ibaykoc/kame"
 )
 
@@ -52,10 +53,10 @@ func (ds *DrawingSystem) OnRemoveEntities(entityIDs []int) {
 	}
 }
 
-func (ds *DrawingSystem) Draw(kdrawer *kame.KDrawer) {
+func (ds *DrawingSystem) Draw(kdrawer *kame.KwindowDrawer) {
 	for _, cSet := range ds.matchEntityIDToComponentSet {
 		pos := cSet.position
-		dmID := cSet.drawableModelID
-		kdrawer.DrawAtPosition(dmID, pos)
+		d := cSet.drawable2d
+		(*kdrawer).AppendDrawable(d, mgl32.Translate3D(pos.Elem()))
 	}
 }

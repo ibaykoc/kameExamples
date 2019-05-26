@@ -32,7 +32,7 @@ func (b *Ball) CreateComponents() {
 	yVel := ((rand.Float32() * 2) - 1) / 20
 	var position kame.Component = &PositionComponent{mgl32.Vec3{x, y, float32(b.id) * 0.0001}}
 	var velocity kame.Component = &VelocityComponent{mgl32.Vec2{xVel, yVel}}
-	var drawable kame.Component = &DrawableComponent{quadModelID}
+	var drawable kame.Component = &DrawableComponent{gopherCircleDrawable}
 	b.components = []*kame.Component{
 		&position,
 		&velocity,
