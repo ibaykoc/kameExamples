@@ -138,7 +138,7 @@ func (ms *MainScene) CreateEntities() {
 	level := ReadLevel()
 	col := len(level[0])
 	row := len(level)
-
+	fmt.Printf("Row:%d, col:%d\n", row, col)
 	f := kwindowDrawer2DCon.Camera().Frustum()
 
 	var entities = []*kame.Entity{}
@@ -155,6 +155,9 @@ func (ms *MainScene) CreateEntities() {
 					-10},
 				scale: mgl32.Vec3{blockWidth, blockHeight, 1},
 			}
+			o, _ := trans.(TransformComponent)
+
+			println(o.position.X)
 			var drawable kame.Component
 			switch level[r][c] {
 			case 0:
@@ -181,7 +184,7 @@ func (ms *MainScene) CreateEntities() {
 			entities = append(entities, &block)
 		}
 	}
-
+	println(len(entities))
 	var ball kame.Entity = &Ball{}
 	entities = append(entities, &ball)
 
