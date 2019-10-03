@@ -19,7 +19,7 @@ func (b *Ball) GetID() int {
 }
 
 func (b *Ball) CreateComponents() {
-	var trans kame.Component = &TransformComponent{
+	var trans kame.Component = &BasicTransformComponent{
 		position: mgl32.Vec3{0, 0, -10},
 		scale:    mgl32.Vec3{1, 1, 1},
 	}

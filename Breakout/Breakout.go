@@ -18,7 +18,6 @@ func main() {
 	gameWindow, err = kame.KgameWindowBuilder().
 		SetTitle("Breakout").
 		SetSize(600, 600).
-		IsResizable().
 		BuildWith([]kame.Scene{
 			&MainScene{},
 		})

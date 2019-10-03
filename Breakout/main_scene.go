@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 	"strconv"
 
@@ -11,8 +10,10 @@ import (
 )
 
 type MainScene struct {
-	entities      []*kame.Entity
-	drawerSystems []*kame.DrawerSystem
+	entities              []*kame.Entity
+	drawerSystems         []*kame.DrawerSystem
+	processorSystems      []*kame.ProcessorSystem
+	inputProcessorSystems []*kame.InputProcessorSystem
 }
 
 var brickBlockDrawable kame.Kdrawable2d
@@ -39,7 +40,6 @@ func ReadLevel() [][]int {
 		}
 		level = append(level, col)
 	}
-	fmt.Printf("%v\n", level)
 	return level
 }
 
@@ -138,28 +138,30 @@ func (ms *MainScene) CreateEntities() {
 	level := ReadLevel()
 	col := len(level[0])
 	row := len(level)
-	fmt.Printf("Row:%d, col:%d\n", row, col)
 	f := kwindowDrawer2DCon.Camera().Frustum()
 
 	var entities = []*kame.Entity{}
 	w, _ := f.NearPlane.GetSize()
-	// fmt.Printf("Width:%v\n", f)
 	blockWidth := w / float32(col)
 	blockHeight := blockWidth * 0.7
-	for r := 0; r < row; r++ {
-		for c := 0; c < col; c++ {
-			var trans kame.Component = &TransformComponent{
-				position: mgl32.Vec3{
-					(f.NearPlane.BottomLeft.X() + blockWidth/2) + (float32(c) * blockWidth),
-					(f.NearPlane.TopLeft.Y() - blockHeight/2) - (float32(r) * blockHeight),
-					-10},
-				scale: mgl32.Vec3{blockWidth, blockHeight, 1},
-			}
-			o, _ := trans.(TransformComponent)
+	topLeft := f.FarPlane.TopLeft
 
-			println(o.position.X)
+	for r := float32(0); r < float32(row); r++ {
+		for c := float32(0); c < float32(col); c++ {
+			var trans kame.Component = &BasicTransformComponent{
+				position: mgl32.Vec3{
+					(-w / 2) + c*blockWidth + (blockWidth / 2),
+					topLeft.Y() - r*blockHeight - blockHeight/2,
+					-10,
+				},
+				scale: mgl32.Vec3{
+					blockWidth,
+					blockHeight,
+					1,
+				},
+			}
 			var drawable kame.Component
-			switch level[r][c] {
+			switch level[int(r)][int(c)] {
 			case 0:
 				continue
 			case 1:
@@ -173,7 +175,7 @@ func (ms *MainScene) CreateEntities() {
 			default:
 				drawable = &DrawableComponent{blueBlockDrawable}
 			}
-			var blockComp kame.Component = &BlockComponent{level[r][c]}
+			var blockComp kame.Component = &BlockComponent{level[int(r)][int(c)]}
 			var block kame.Entity = &Block{
 				components: []*kame.Component{
 					&trans,
@@ -183,15 +185,16 @@ func (ms *MainScene) CreateEntities() {
 			}
 			entities = append(entities, &block)
 		}
+
 	}
-	println(len(entities))
 	var ball kame.Entity = &Ball{}
 	entities = append(entities, &ball)
 
-	var trans kame.Component = &TransformComponent{
+	var trans kame.Component = &UserControlledTransformComponent{
 		position: mgl32.Vec3{0, f.NearPlane.BottomLeft.Y() + 0.5, 0},
 		scale:    mgl32.Vec3{2.5, 0.5, 1},
 	}
+
 	var draw kame.Component = &DrawableComponent{paddleDrawable}
 	var paddle kame.Entity = &Paddle{
 		components: []*kame.Component{
@@ -200,7 +203,6 @@ func (ms *MainScene) CreateEntities() {
 		},
 	}
 	entities = append(entities, &paddle)
-
 	ms.entities = entities
 }
 
@@ -208,12 +210,22 @@ func (ms *MainScene) GetEntityPointers() []*kame.Entity {
 	return ms.entities
 }
 
-func (ms *MainScene) CreateProcessorSystems() {
+func (ms *MainScene) CreateInputProcessorSystems() {
+	var ip kame.InputProcessorSystem = &InputProcessor{}
+	ms.inputProcessorSystems = []*kame.InputProcessorSystem{
+		&ip,
+	}
+}
 
+func (ms *MainScene) GetInputProcessorSystemPointers() []*kame.InputProcessorSystem {
+	return ms.inputProcessorSystems
+}
+
+func (ms *MainScene) CreateProcessorSystems() {
 }
 
 func (ms *MainScene) GetProcessorSystemPointers() []*kame.ProcessorSystem {
-	return []*kame.ProcessorSystem{}
+	return nil
 }
 
 func (ms *MainScene) CreateDrawerSystems() {
